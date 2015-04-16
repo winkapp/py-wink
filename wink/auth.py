@@ -40,19 +40,19 @@ def need_to_reauth(tolerance=10, **kwargs):
     return now >= expires
 
 
-def auth(**kwargs):
+def auth(grant_type="password", auth_path="/oauth2/token", **kwargs):
     """Do password authentication.
 
     Also requires kwargs "username" and "password".
     """
 
     data = dict(
-        grant_type="password",
+        grant_type=grant_type,
         username=kwargs["username"],
         password=kwargs["password"],
     )
 
-    result = _auth(data, **kwargs)
+    result = _auth(data, auth_path=auth_path, **kwargs)
     del result["password"]
 
     return result
@@ -88,9 +88,9 @@ def _auth(data, auth_path="/oauth2/token", **kwargs):
 
     # TODO handle case of bad auth information
 
-    if resp["status"] != "201":
+    if resp["status"] != "201" and resp["status"] != "200":
         raise RuntimeError(
-            "expected HTTP 201, but got %s for auth" % resp["status"]
+            "expected HTTP 200 or 201, but got %s for auth" % resp["status"]
         )
 
     data = json.loads(content)["data"]
