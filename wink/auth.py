@@ -40,19 +40,19 @@ def need_to_reauth(tolerance=10, **kwargs):
     return now >= expires
 
 
-def auth(**kwargs):
+def auth(grant_type="password", auth_path="/oauth2/token", **kwargs):
     """Do password authentication.
 
     Also requires kwargs "username" and "password".
     """
 
     data = dict(
-        grant_type="password",
+        grant_type=grant_type,
         username=kwargs["username"],
         password=kwargs["password"],
     )
 
-    result = _auth(data, **kwargs)
+    result = _auth(data, auth_path=auth_path, **kwargs)
     del result["password"]
 
     return result
