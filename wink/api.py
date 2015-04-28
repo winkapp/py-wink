@@ -28,7 +28,7 @@ class Wink(object):
         "Content-Type": "application/json",
     }
 
-    def __init__(self, auth_object, debug=False):
+    def __init__(self, auth_object, save_auth=True, debug=False):
         """
         Provide an object from the persist module, which will be used
         to load and save authentication tokens as needed.
@@ -36,8 +36,12 @@ class Wink(object):
 
         self.debug = debug
 
-        self.auth_object = auth_object
-        self.auth = self.auth_object.load()
+        if save_auth:
+            self.auth_object = auth_object
+            self.auth = self.auth_object.load()
+        else:
+            self.auth = auth_object
+            self.auth_object = None
 
         self.http = httplib2.Http()
         self._device_list = []
@@ -61,7 +65,9 @@ class Wink(object):
 
             # TODO add error handling
             self.auth = reauth(**self.auth)
-            self.auth_object.save(self.auth)
+
+            if self.auth_object is not None:
+                self.auth_object.save(self.auth)
 
         # add the auth header
         all_headers = self._headers()
@@ -143,6 +149,9 @@ class Wink(object):
 
     def get_devices(self):
         return self._get("/users/me/wink_devices")
+
+    def get_geofences(self):
+        return self._get("/users/me/geofences")
 
     def get_services(self):
         return self._get("/users/me/linked_services")
