@@ -45,12 +45,16 @@ def auth(grant_type="password", auth_path="/oauth2/token", **kwargs):
 
     Also requires kwargs "username" and "password".
     """
-
     data = dict(
-        grant_type=grant_type,
-        username=kwargs["username"],
-        password=kwargs["password"],
-    )
+            grant_type=grant_type,
+            password=kwargs["password"],
+        )
+
+    if 'username' in kwargs.keys():
+        data['username'] = kwargs['username']
+    elif 'user_id' in kwargs.keys():
+        data['user_id'] = kwargs['user_id']
+
 
     result = _auth(data, auth_path=auth_path, **kwargs)
     del result["password"]
