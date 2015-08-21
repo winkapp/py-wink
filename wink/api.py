@@ -26,6 +26,7 @@ class Wink(object):
 
     content_headers = {
         "Content-Type": "application/json",
+        "User-Agent": "wink/99.99.99 (iPhone; iOS 7.1.2; Scale/2.0)"
     }
 
     def __init__(self, auth_object, save_auth=True, debug=False):
