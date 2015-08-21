@@ -53,10 +53,10 @@ class Wink(object):
         return "%s%s" % (self.auth["base_url"], path)
 
     def _headers(self):
-        return dict(
-            Authorization="Bearer %s" % self.auth["access_token"],
-            User-Agent: "wink/99.99.99 (iPhone; iOS 7.1.2; Scale/2.0)"
-        )
+        return {
+            "Authorization": "Bearer %s" % self.auth["access_token"],
+            "User-Agent": "wink/99.99.99 (iPhone; iOS 7.1.2; Scale/2.0)"
+        }
 
     def _http(self, path, method, headers={}, body=None, expected="200"):
         # see if we need to reauth?
