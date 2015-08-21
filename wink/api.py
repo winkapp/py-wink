@@ -26,7 +26,6 @@ class Wink(object):
 
     content_headers = {
         "Content-Type": "application/json",
-        "User-Agent": "wink/99.99.99 (iPhone; iOS 7.1.2; Scale/2.0)"
     }
 
     def __init__(self, auth_object, save_auth=True, debug=False):
@@ -56,6 +55,7 @@ class Wink(object):
     def _headers(self):
         return dict(
             Authorization="Bearer %s" % self.auth["access_token"],
+            User-Agent: "wink/99.99.99 (iPhone; iOS 7.1.2; Scale/2.0)"
         )
 
     def _http(self, path, method, headers={}, body=None, expected="200"):
