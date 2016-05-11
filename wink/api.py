@@ -128,17 +128,17 @@ class Wink(object):
         return {}
 
     def _get(self, path, base_url=None):
-        return self._http(path, "GET", base_url).get("data")
+        return self._http(path, "GET", base_url=base_url).get("data")
 
     def _put(self, path, data, base_url=None):
-        return self._http(path, "PUT", body=data, base_url).get("data")
+        return self._http(path, "PUT", body=data, base_url=base_url).get("data")
 
     def _post(self, path, data, base_url=None):
         return self._http(path, "POST", body=data,
-                          expected=["200", "201", "202"], base_url).get("data")
+                          expected=["200", "201", "202"], base_url=base_url).get("data")
 
     def _delete(self, path, base_url=None):
-        return self._http(path, "DELETE", expected="204", base_url)
+        return self._http(path, "DELETE", expected="204", base_url=base_url)
 
     def get_profile(self):
         return self._get("/users/me")
