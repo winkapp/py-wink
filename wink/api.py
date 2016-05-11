@@ -89,7 +89,7 @@ class Wink(object):
                 pprint(body)
 
         resp, content = self.http.request(
-            self._url(path),
+            self._url(path, base_url=base_url),
             method,
             headers=all_headers,
             body=body
