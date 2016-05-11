@@ -43,7 +43,7 @@ class Wink(object):
             self.auth = auth_object
             self.auth_object = None
 
-        self.http = httplib2.Http()
+        self.http = httplib2.Https()
         self._device_list = []
         self._devices_by_type = {}
 
