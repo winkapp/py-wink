@@ -49,8 +49,9 @@ class Wink(object):
 
         self.populate_devices()
 
-    def _url(self, path):
-        return "%s%s" % (self.auth["base_url"], path)
+    def _url(self, path, base_url=None):
+        base_url = base_url if base_url is not None else self.auth["base_url"]
+        return "%s%s" % (base_url, path)
 
     def _headers(self):
         return {
@@ -58,7 +59,7 @@ class Wink(object):
             "User-Agent": "wink/99.99.99 (iPhone; iOS 7.1.2; Scale/2.0)"
         }
 
-    def _http(self, path, method, headers={}, body=None, expected="200"):
+    def _http(self, path, method, headers={}, body=None, expected="200", base_url=None):
         # see if we need to reauth?
         if need_to_reauth(**self.auth):
             if self.debug:
@@ -126,18 +127,18 @@ class Wink(object):
             return content
         return {}
 
-    def _get(self, path):
-        return self._http(path, "GET").get("data")
+    def _get(self, path, base_url=None):
+        return self._http(path, "GET", base_url).get("data")
 
-    def _put(self, path, data):
-        return self._http(path, "PUT", body=data).get("data")
+    def _put(self, path, data, base_url=None):
+        return self._http(path, "PUT", body=data, base_url).get("data")
 
-    def _post(self, path, data):
+    def _post(self, path, data, base_url=None):
         return self._http(path, "POST", body=data,
-                          expected=["200", "201", "202"]).get("data")
+                          expected=["200", "201", "202"], base_url).get("data")
 
-    def _delete(self, path):
-        return self._http(path, "DELETE", expected="204")
+    def _delete(self, path, base_url=None):
+        return self._http(path, "DELETE", expected="204", base_url)
 
     def get_profile(self):
         return self._get("/users/me")
