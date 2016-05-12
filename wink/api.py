@@ -96,6 +96,9 @@ class Wink(object):
         if method == "GET":
             response = request.get(url, data=json.dumps(body), headers=all_headers)
             content = response.content
+        elif method == "PUT":
+            response = request.put(url, data=json.dumps(body), headers=all_headers)
+            content = response.content
 
         if self.debug:
             print "Response:", str(response.status_code)
