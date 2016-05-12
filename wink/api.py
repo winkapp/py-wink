@@ -98,7 +98,7 @@ class Wink(object):
             response = requests.put(url, data=json.dumps(body), headers=all_headers)
         elif method == "POST":
             response = requests.post(url, data=json.dumps(body), headers=all_headers)
-        elif method == "DELETE"
+        elif method == "DELETE":
             response = requests.delete(url, data=json.dumps(body), headers=all_headers)
 
         content = response.content
