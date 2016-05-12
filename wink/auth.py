@@ -10,6 +10,7 @@ Both auth and reauth functions require the following kwargs:
 import datetime
 import httplib2
 import json
+import requests
 
 default_expires_in = 900
 
@@ -81,6 +82,8 @@ def _auth(data, auth_path="/oauth2/token", **kwargs):
         client_secret=kwargs["client_secret"],
         **data
     )
+
+    print requests.post("".join([kwargs["base_url"], auth_path]), data=body, headers={"Content-Type": "application/json"})
 
     http = httplib2.Http()
     resp, content = http.request(
