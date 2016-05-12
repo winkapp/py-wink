@@ -3,7 +3,7 @@ setup(
     name="Wink",
     version="0.1",
     packages=find_packages(),
-    install_requires=['httplib2'],
+    install_requires=['httplib2', 'pyopenssl', 'pyasn1', 'ndg-httpsclient'],
     author="John S. Otto",
     author_email="me@johnotto.net",
     description="Library for interfacing with Wink devices by Quirky",
