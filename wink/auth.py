@@ -8,7 +8,6 @@ Both auth and reauth functions require the following kwargs:
 """
 
 import datetime
-import httplib2
 import json
 import requests
 
@@ -84,16 +83,6 @@ def _auth(data, auth_path="/oauth2/token", **kwargs):
     )
 
     results = requests.post("".join([kwargs["base_url"], auth_path]), data=json.dumps(body), headers={"Content-Type": "application/json"})
-
-    # http = httplib2.Http()
-    # resp, content = http.request(
-    #     "".join([kwargs["base_url"], auth_path]),
-    #     "POST",
-    #     headers={"Content-Type": "application/json"},
-    #     body=json.dumps(body),
-    # )
-
-    # TODO handle case of bad auth information
 
     if results.status_code != 201 and results.status_code != 200:
         raise RuntimeError(

@@ -1,4 +1,4 @@
-import httplib2
+import requests
 import json
 from pprint import pprint
 
@@ -44,10 +44,6 @@ class Wink(object):
             self.auth_object = None
 
         self.http = httplib2.Http()
-        self._device_list = []
-        self._devices_by_type = {}
-
-        self.populate_devices()
 
     def _url(self, path, base_url=None):
         base_url = base_url if base_url is not None else self.auth["base_url"]
@@ -88,20 +84,26 @@ class Wink(object):
                 print "Body:",
                 pprint(body)
 
-        resp, content = self.http.request(
-            self._url(path, base_url=base_url),
-            method,
-            headers=all_headers,
-            body=body
-        )
+        # resp, content = self.http.request(
+        #     self._url(path, base_url=base_url),
+        #     method,
+        #     headers=all_headers,
+        #     body=body
+        # )
+
+        url = self._url(path, base_url=base_url)
+
+        if method == "GET":
+            response = request.get(url, data=json.dumps(body), headers=all_headers)
+            content = response.content
 
         if self.debug:
-            print "Response:", resp["status"]
+            print "Response:", str(response.status_code)
 
         # coerce to JSON, if possible
         if content:
             try:
-                content = json.loads(content)
+                content = json.loads(response.content)
                 if "errors" in content and content["errors"]:
                     raise RuntimeError("\n".join(content["errors"]))
             except:
@@ -113,11 +115,11 @@ class Wink(object):
         if type(expected) is str:
             expected = set([expected])
 
-        if resp["status"] not in expected:
+        if str(response.status_code) not in expected:
             raise RuntimeError(
                 "expected code %s, but got %s for %s %s" % (
                     expected,
-                    resp["status"],
+                    str(response.status_code),
                     method,
                     path,
                 )
