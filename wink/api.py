@@ -43,7 +43,6 @@ class Wink(object):
             self.auth = auth_object
             self.auth_object = None
 
-        self.http = httplib2.Http()
 
     def _url(self, path, base_url=None):
         base_url = base_url if base_url is not None else self.auth["base_url"]
