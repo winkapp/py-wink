@@ -2,7 +2,6 @@ import requests
 import json
 from pprint import pprint
 
-from auth import reauth, need_to_reauth
 import devices
 
 
@@ -55,17 +54,6 @@ class Wink(object):
         }
 
     def _http(self, path, method, headers={}, body=None, expected="200", base_url=None):
-        # see if we need to reauth?
-        if need_to_reauth(**self.auth):
-            if self.debug:
-                print "Refreshing access token"
-
-            # TODO add error handling
-            self.auth = reauth(**self.auth)
-
-            if self.auth_object is not None:
-                self.auth_object.save(self.auth)
-
         # add the auth header
         all_headers = self._headers()
         all_headers.update(headers)
