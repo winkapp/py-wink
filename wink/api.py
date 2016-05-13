@@ -83,13 +83,6 @@ class Wink(object):
                 print "Body:",
                 pprint(body)
 
-        # resp, content = self.http.request(
-        #     self._url(path, base_url=base_url),
-        #     method,
-        #     headers=all_headers,
-        #     body=body
-        # )
-
         url = self._url(path, base_url=base_url)
 
         if method == "GET":
