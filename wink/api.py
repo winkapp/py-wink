@@ -109,7 +109,7 @@ class Wink(object):
         # coerce to JSON, if possible
         if content:
             try:
-                content = json.loads(response.content)
+                content = json.loads(content)
                 if "errors" in content and content["errors"]:
                     raise RuntimeError("\n".join(content["errors"]))
             except:
