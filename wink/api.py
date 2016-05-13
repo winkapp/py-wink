@@ -93,13 +93,13 @@ class Wink(object):
         url = self._url(path, base_url=base_url)
 
         if method == "GET":
-            response = requests.get(url, data=json.dumps(body), headers=all_headers)
+            response = requests.get(url, data=body, headers=all_headers)
         elif method == "PUT":
-            response = requests.put(url, data=json.dumps(body), headers=all_headers)
+            response = requests.put(url, data=body, headers=all_headers)
         elif method == "POST":
-            response = requests.post(url, data=json.dumps(body), headers=all_headers)
+            response = requests.post(url, data=body, headers=all_headers)
         elif method == "DELETE":
-            response = requests.delete(url, data=json.dumps(body), headers=all_headers)
+            response = requests.delete(url, data=body, headers=all_headers)
 
         content = response.content
 
