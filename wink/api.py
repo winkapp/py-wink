@@ -96,15 +96,28 @@ class Wink(object):
             except:
                 pass
         else:
-            content = {'data':{}}
+            content = {'data':[]}
 
-        content['data']['status_code'] = response.status_code
+        content['status_code'] = response.status_code
 
         if self.debug:
             pprint(content)
 
         if type(expected) is str:
             expected = set([expected])
+
+        if str(response.status_code) not in expected:
+            raise RuntimeError(
+                {
+                "message":"expected code %s, but got %s for %s %s" % (
+                    expected,
+                    resp["status"],
+                    method,
+                    path,
+                    ),
+                "status_code":response.status_code
+                }
+            )
 
         if content:
             return content

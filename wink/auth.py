@@ -86,7 +86,10 @@ def _auth(data, auth_path="/oauth2/token", **kwargs):
 
     if results.status_code != 201 and results.status_code != 200:
         raise RuntimeError(
-            "expected HTTP 200 or 201, but got %d for auth" % results.status_code
+            {
+                'status_code':results.status_code,
+                'message':"expected HTTP 200 or 201, but got %d for auth" % results.status_code
+            }
         )
 
     data = json.loads(results.content)["data"]
