@@ -83,6 +83,8 @@ class Wink(object):
             response = requests.delete(url, data=body, headers=all_headers)
 
         content = response.content
+        if content is not None and len(content) < 2:
+            content = None
 
         if self.debug:
             print "Response:", str(response.status_code)
