@@ -83,36 +83,28 @@ class Wink(object):
             response = requests.delete(url, data=body, headers=all_headers)
 
         content = response.content
-        if content is not None and len(content) < 2:
-            content = None
 
         if self.debug:
             print "Response:", str(response.status_code)
 
         # coerce to JSON, if possible
-        if content:
+        if content and len(content) >= 2:
             try:
                 content = json.loads(content)
                 if "errors" in content and content["errors"]:
                     raise RuntimeError("\n".join(content["errors"]))
             except:
                 pass
+        else:
+            content = {}
+
+        content['status_code'] = response.status_code
 
         if self.debug:
             pprint(content)
 
         if type(expected) is str:
             expected = set([expected])
-
-        if str(response.status_code) not in expected:
-            raise RuntimeError(
-                "expected code %s, but got %s for %s %s" % (
-                    expected,
-                    str(response.status_code),
-                    method,
-                    path,
-                )
-            )
 
         if content:
             return content
