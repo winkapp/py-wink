@@ -110,7 +110,7 @@ class Wink(object):
                 {
                 "message":"expected code %s, but got %s for %s %s" % (
                     expected,
-                    resp["status"],
+                    status_code,
                     method,
                     path,
                     ),
