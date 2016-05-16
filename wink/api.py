@@ -96,9 +96,9 @@ class Wink(object):
             except:
                 pass
         else:
-            content = {}
+            content = {'data':{}}
 
-        content['status_code'] = response.status_code
+        content['data']['status_code'] = response.status_code
 
         if self.debug:
             pprint(content)
