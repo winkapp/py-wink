@@ -135,9 +135,6 @@ class Wink(object):
     def _delete(self, path, base_url=None):
         return self._http(path, "DELETE", expected="204", base_url=base_url)
 
-    def get_profile(self):
-        return self._get("/users/me")
-
     def update_profile(self, data):
         return self._put("/users/me", data)
 
