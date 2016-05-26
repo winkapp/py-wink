@@ -1,8 +1,7 @@
-import httplib2
+import requests
 import json
 from pprint import pprint
 
-from auth import reauth, need_to_reauth
 import devices
 
 
@@ -43,14 +42,10 @@ class Wink(object):
             self.auth = auth_object
             self.auth_object = None
 
-        self.http = httplib2.Http()
-        self._device_list = []
-        self._devices_by_type = {}
 
-        self.populate_devices()
-
-    def _url(self, path):
-        return "%s%s" % (self.auth["base_url"], path)
+    def _url(self, path, base_url=None):
+        base_url = base_url if base_url is not None else self.auth["base_url"]
+        return "%s%s" % (base_url, path)
 
     def _headers(self):
         return {
@@ -58,18 +53,7 @@ class Wink(object):
             "User-Agent": "wink/99.99.99 (iPhone; iOS 7.1.2; Scale/2.0)"
         }
 
-    def _http(self, path, method, headers={}, body=None, expected="200"):
-        # see if we need to reauth?
-        if need_to_reauth(**self.auth):
-            if self.debug:
-                print "Refreshing access token"
-
-            # TODO add error handling
-            self.auth = reauth(**self.auth)
-
-            if self.auth_object is not None:
-                self.auth_object.save(self.auth)
-
+    def _http(self, path, method, headers={}, body=None, expected="200", base_url=None):
         # add the auth header
         all_headers = self._headers()
         all_headers.update(headers)
@@ -87,24 +71,33 @@ class Wink(object):
                 print "Body:",
                 pprint(body)
 
-        resp, content = self.http.request(
-            self._url(path),
-            method,
-            headers=all_headers,
-            body=body
-        )
+        url = self._url(path, base_url=base_url)
+
+        if method == "GET":
+            response = requests.get(url, data=body, headers=all_headers)
+        elif method == "PUT":
+            response = requests.put(url, data=body, headers=all_headers)
+        elif method == "POST":
+            response = requests.post(url, data=body, headers=all_headers)
+        elif method == "DELETE":
+            response = requests.delete(url, data=body, headers=all_headers)
+
+        content = response.content
+        status_code = str(response.status_code)
 
         if self.debug:
-            print "Response:", resp["status"]
+            print "Response:", status_code
 
         # coerce to JSON, if possible
-        if content:
+        if content and len(content) >= 2:
             try:
                 content = json.loads(content)
                 if "errors" in content and content["errors"]:
                     raise RuntimeError("\n".join(content["errors"]))
             except:
                 pass
+        else:
+            content = {}
 
         if self.debug:
             pprint(content)
@@ -112,35 +105,35 @@ class Wink(object):
         if type(expected) is str:
             expected = set([expected])
 
-        if resp["status"] not in expected:
+        if status_code not in expected:
             raise RuntimeError(
-                "expected code %s, but got %s for %s %s" % (
+                {
+                "message":"expected code %s, but got %s for %s %s" % (
                     expected,
-                    resp["status"],
+                    status_code,
                     method,
                     path,
-                )
+                    ),
+                "status_code":status_code
+                }
             )
 
         if content:
             return content
         return {}
 
-    def _get(self, path):
-        return self._http(path, "GET").get("data")
+    def _get(self, path, base_url=None):
+        return self._http(path, "GET", base_url=base_url).get("data")
 
-    def _put(self, path, data):
-        return self._http(path, "PUT", body=data).get("data")
+    def _put(self, path, data, base_url=None):
+        return self._http(path, "PUT", body=data, expected=["200", "201", "202", "204"], base_url=base_url).get("data")
 
-    def _post(self, path, data):
+    def _post(self, path, data, base_url=None):
         return self._http(path, "POST", body=data,
-                          expected=["200", "201", "202"]).get("data")
+                          expected=["200", "201", "202", "204"], base_url=base_url).get("data")
 
-    def _delete(self, path):
-        return self._http(path, "DELETE", expected="204")
-
-    def get_profile(self):
-        return self._get("/users/me")
+    def _delete(self, path, base_url=None):
+        return self._http(path, "DELETE", expected="204", base_url=base_url)
 
     def update_profile(self, data):
         return self._put("/users/me", data)
@@ -216,6 +209,9 @@ class Wink(object):
     def _get_device_list_func(self, device_type):
         return lambda: list(self._devices_by_type[device_type])
 
+    def get_profile(self):
+        return self._get("/users/me")
+        
     def device_list(self):
         return list(self._device_list)
 

@@ -8,8 +8,8 @@ Both auth and reauth functions require the following kwargs:
 """
 
 import datetime
-import httplib2
 import json
+import requests
 
 default_expires_in = 900
 
@@ -82,22 +82,17 @@ def _auth(data, auth_path="/oauth2/token", **kwargs):
         **data
     )
 
-    http = httplib2.Http()
-    resp, content = http.request(
-        "".join([kwargs["base_url"], auth_path]),
-        "POST",
-        headers={"Content-Type": "application/json"},
-        body=json.dumps(body),
-    )
+    results = requests.post("".join([kwargs["base_url"], auth_path]), data=json.dumps(body), headers={"Content-Type": "application/json"})
 
-    # TODO handle case of bad auth information
-
-    if resp["status"] != "201" and resp["status"] != "200":
+    if results.status_code != 201 and results.status_code != 200:
         raise RuntimeError(
-            "expected HTTP 200 or 201, but got %s for auth" % resp["status"]
+            {
+                'status_code':results.status_code,
+                'message':"expected HTTP 200 or 201, but got %d for auth" % results.status_code
+            }
         )
 
-    data = json.loads(content)["data"]
+    data = json.loads(results.content)["data"]
 
     # make up an expiration time for the access token,
     # if one is not provided
