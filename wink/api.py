@@ -216,6 +216,9 @@ class Wink(object):
     def _get_device_list_func(self, device_type):
         return lambda: list(self._devices_by_type[device_type])
 
+    def get_profile(self):
+        return self._get("/users/me")
+        
     def device_list(self):
         return list(self._device_list)
 
